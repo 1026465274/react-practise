@@ -1,0 +1,7 @@
+.App {
+  text-align: center;
+}
+
+.todo-item{
+  text-decoration: line-through;
+}
