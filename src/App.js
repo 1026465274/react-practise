@@ -1,12 +1,17 @@
 import "./App.css";
-import { List, Checkbox, Divider, Button, Input } from "antd";
-import { useState } from "react";
+import { List, Divider, Button, Input } from "antd";
+import { useRef } from "react";
+import TodoItem from "./components/TodoItem";
+import { useTodo } from "./hooks/todoHooks";
 
 function App() {
-  const [data, setData] = useState([]);
-  const [value, setValue] = useState();
+  const { data, setData, value, setValue, uncompleted, checkItem, deleteItem } =
+    useTodo();
+
+  const inputRef = useRef(null);
 
   const handleAdd = () => {
+    console.log(23);
     if (value) {
       setData((item) => [
         ...item,
@@ -16,6 +21,7 @@ function App() {
           done: false,
         },
       ]);
+      inputRef.current.focus();
       setValue("");
     }
   };
@@ -30,38 +36,26 @@ function App() {
         dataSource={data}
         renderItem={(item) => (
           <List.Item style={{ marginLeft: 12 }}>
-            <Checkbox
-              checked={item.done}
-              onChange={(e) => {
-                setData((data) =>
-                  data.map((i) => {
-                    if (i.value === item.value) {
-                      i.done = e.target.checked;
-                    }
-                    return i;
-                  })
-                );
-              }}
-            ></Checkbox>
-            <span className={item.done ? "todo-item" : ""}>{item.value}</span>
-            {item.done ? <span> (已完成)</span> : <span> (未完成)</span>}
-            <a
-              style={{ marginLeft: 12 }}
-              onClick={() => {
-                setData((data) => data.filter((i) => i.id === item.id));
-              }}
-            >
-              删除
-            </a>
+            <TodoItem
+              item={item}
+              checkItem={checkItem}
+              deleteItem={deleteItem}
+            />
           </List.Item>
         )}
       />
       <Input
+        ref={inputRef}
         value={value}
         onChange={(val) => {
           setValue(val.target.value);
         }}
       />
+
+      <div>
+        未完成/ 总数
+        {uncompleted} / {data.length}
+      </div>
       <Button onClick={handleAdd} disabled={!value}>
         添加
       </Button>
